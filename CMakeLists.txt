@@ -34,10 +34,13 @@ target_compile_definitions(zse_bridge PRIVATE
     ZSE_BUILD_DLL
 )
 
-# Output directly to publish/lib folder
+# Output directly to publish/lib folder (across both single-config and multi-config generators)
 set_target_properties(zse_bridge PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/publish/lib"
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/publish/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/publish/lib"
+    LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/publish/lib"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/publish/lib"
+    ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/publish/lib"
 )
 

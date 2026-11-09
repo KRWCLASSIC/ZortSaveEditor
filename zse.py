@@ -190,6 +190,36 @@ def cmd_build(args=None):
     ]
     subprocess.run(cmake_build, check=True)
 
+    # Ensure zse_bridge.dll is positioned directly in publish/lib/ regardless of generator
+    publish_lib = PUBLISH_DIR / "lib"
+    publish_lib.mkdir(parents=True, exist_ok=True)
+    bridge_candidates = [
+        publish_lib / "zse_bridge.dll",
+        publish_lib / "Release" / "zse_bridge.dll",
+        BUILD_DIR / "zse_bridge.dll",
+        BUILD_DIR / "Release" / "zse_bridge.dll",
+    ]
+    bridge_found = None
+    for cand in bridge_candidates:
+        if cand.exists():
+            bridge_found = cand
+            break
+    if not bridge_found:
+        deep_search = list(BUILD_DIR.glob("**/zse_bridge.dll"))
+        if deep_search:
+            bridge_found = deep_search[0]
+
+    if bridge_found:
+        target_dll = publish_lib / "zse_bridge.dll"
+        if bridge_found.resolve() != target_dll.resolve():
+            shutil.copy2(bridge_found, target_dll)
+            print_success(f"Staged zse_bridge.dll -> {target_dll}")
+        stray_rel = publish_lib / "Release"
+        if stray_rel.exists() and stray_rel.is_dir():
+            shutil.rmtree(stray_rel, ignore_errors=True)
+    else:
+        sys.exit(f"{Color.RED}[!] Error: zse_bridge.dll was not found after compilation!{Color.RESET}")
+
     # Export compile_commands.json to workspace root for language servers (clangd)
     src_compile_cmds = BUILD_DIR / "compile_commands.json"
     if src_compile_cmds.exists():
