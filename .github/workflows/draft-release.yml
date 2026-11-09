@@ -1,0 +1,47 @@
+name: Draft Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release Tag (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+permissions:
+  contents: write
+
+jobs:
+  draft-release:
+    name: Draft Release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build
+        run: python zse.py build
+
+      - name: Package ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "publish\*" -DestinationPath "ZortSaveEditor-${{ inputs.tag }}-win-x64.zip" -Force
+
+      - name: Create Draft Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          name: Zort Save Editor ${{ inputs.tag }}
+          draft: true
+          files: ZortSaveEditor-${{ inputs.tag }}-win-x64.zip

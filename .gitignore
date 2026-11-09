@@ -1,0 +1,30 @@
+# Build outputs
+bin/
+obj/
+publish/
+build/
+.build/
+build_bridge/
+
+# Compilation database & language server caches
+compile_commands.json
+.clangd/
+
+# Dependencies & staged binaries
+.deps/
+deps/
+lib/
+
+# Python cache & logs
+__pycache__/
+*.pyc
+aqtinstall.log
+
+# Local backups & temp
+*.bak
+*.tmp
+*.user
+*.log
+.vs/
+.vscode/
+.cache/
